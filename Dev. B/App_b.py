@@ -279,10 +279,11 @@ def advertisements_page():
 def transfer_page():
     global status_message
 
+    sender_temp_id = load_temp_id()
+    receiver_temp_id = load_peer_temp_id()
+
     if request.method == 'POST':
         amount = request.form['amount']
-        sender_temp_id = load_temp_id()
-        receiver_temp_id = load_peer_temp_id()
 
         payload = {
             "amount": amount,
@@ -300,6 +301,8 @@ def transfer_page():
 
     return render_template_string("""
         <h1>E-commerce Transfer</h1>
+
+        <p><b>Recipient Temp ID:</b> {{ receiver_temp_id }}</p>
 
         <form method="POST">
             <label>Select Item:</label><br>
@@ -320,7 +323,8 @@ def transfer_page():
         <p>{{ status }}</p>
 
         <br><a href="/">Back Home</a>
-    """, status=status_message)
+    """, status=status_message, receiver_temp_id=receiver_temp_id)
+
 
 @app.route('/balance')
 def balance_page():

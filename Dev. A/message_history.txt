@@ -14,3 +14,4 @@ Peer requested Webpage HTML. Sent 5042657 characters.
 Peer requested Advertisement. Sent: Peer A's advertised website
 Sent Transfer: {'amount': '20', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
 Sent Transfer: {'amount': '30', 'sender_temp_id': 'child:mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
+Peer requested Temp ID. Sent: mt71fFaMHd

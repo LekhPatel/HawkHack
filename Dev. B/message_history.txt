@@ -14,3 +14,4 @@ Visited Advertised Webpage. Received 5042657 characters.
 Scanned Advertisement: Peer A's advertised website
 Received Transfer: {'amount': '20', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
 Received Transfer: {'amount': '30', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'child:AoFvqbKuM9'}
+Requested Peer Temp ID. Peer responded: mt71fFaMHd
