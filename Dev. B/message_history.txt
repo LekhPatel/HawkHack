@@ -7,3 +7,7 @@ Received: Hello
 Received: Hello
 Peer requested Advertisement. Sent: Peer B's Website
 Scanned Advertisement: Peer A's advertised website
+Peer requested Advertisement. Sent: Peer B's Website
+Peer requested Webpage HTML. Sent 4668378 characters.
+Scanned Advertisement: Peer A's advertised website
+Visited Advertised Webpage. Received 5042657 characters.

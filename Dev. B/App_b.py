@@ -19,6 +19,8 @@ MESSAGE_HISTORY_FILE = os.path.join(BASE_DIR, "message_history.txt")
 TEMP_ID_FILE = os.path.join(BASE_DIR, "temp_id.txt")
 PEER_TEMP_ID_FILE = os.path.join(BASE_DIR, "peer_temp_id.txt")
 ADVERTISEMENT_FILE = os.path.join(BASE_DIR, "advertisement.txt")
+WEBPAGE_FILE = os.path.join(BASE_DIR, "webpage.html")
+
 
 
 # IDs
@@ -47,6 +49,12 @@ def load_advertisement():
         with open(ADVERTISEMENT_FILE, "r") as f:
             return f.read().strip()
     return "No advertisement available."
+
+def load_webpage():
+    if os.path.exists(WEBPAGE_FILE):
+        with open(WEBPAGE_FILE, "r", encoding="utf-8") as f:
+            return f.read()
+    return "<h1>No Webpage Available</h1>"
 
 
 def save_peer_temp_id(peer_temp_id):
@@ -163,22 +171,39 @@ def request_peer_id_page():
 @app.route('/advertisements', methods=['GET', 'POST'])
 def advertisements_page():
     global status_message
+    ad_text = None
+    webpage_content = None
 
     if request.method == 'POST':
-        try:
-            response = requests.post(f"{PEER_URL}/request_advertisement")
-            ad_text = response.text.strip()
-            save_message_history(f"Scanned Advertisement: {ad_text}")
-            status_message = f"Advertisement: {ad_text}"
-        except Exception as e:
-            status_message = f"Error scanning Advertisement: {e}"
+        if 'scan_ad' in request.form:
+            try:
+                response = requests.post(f"{PEER_URL}/request_advertisement")
+                ad_text = response.text.strip()
+                save_message_history(f"Scanned Advertisement: {ad_text}")
+                status_message = f"Advertisement: {ad_text}"
+            except Exception as e:
+                status_message = f"Error scanning Advertisement: {e}"
+        elif 'visit_web' in request.form:
+            try:
+                response = requests.post(f"{PEER_URL}/request_webpage")
+                webpage_content = response.text
+                save_message_history(f"Visited Advertised Webpage. Received {len(webpage_content)} characters.")
+                status_message = "Loaded Webpage Below:"
+            except Exception as e:
+                status_message = f"Error loading Webpage: {e}"
 
     return render_template_string("""
         <h1>Scan Peer Advertisements</h1>
 
         <form method="POST">
-            <input type="submit" value="Scan Advertisements">
+            <input type="submit" name="scan_ad" value="Scan Advertisements">
         </form>
+
+        {% if status.startswith('Advertisement:') %}
+        <form method="POST">
+            <input type="submit" name="visit_web" value="Visit Advertised Page">
+        </form>
+        {% endif %}
 
         <h3>Status:</h3>
         <p>{{ status }}</p>
@@ -186,8 +211,16 @@ def advertisements_page():
         <h3>Message History:</h3>
         <pre>{{ history }}</pre>
 
+        {% if webpage %}
+        <hr>
+        <h2>Advertised Webpage:</h2>
+        <div style="border:1px solid gray; padding:10px;">
+            {{ webpage | safe }}
+        </div>
+        {% endif %}
+
         <br><a href="/">Back Home</a>
-    """, status=status_message, history=load_message_history())
+    """, status=status_message, history=load_message_history(), webpage=webpage_content)
 
 
 @app.route('/receive', methods=['POST'])
@@ -214,6 +247,13 @@ def request_advertisement_route():
     save_message_history(f"Peer requested Advertisement. Sent: {ad_text}")
     print(f"Peer requested Advertisement. Sent: {ad_text}")
     return ad_text
+
+@app.route('/request_webpage', methods=['POST'])
+def request_webpage_route():
+    webpage_content = load_webpage()
+    save_message_history(f"Peer requested Webpage HTML. Sent {len(webpage_content)} characters.")
+    print("Peer requested Webpage HTML. Sent webpage.")
+    return webpage_content
 
 
 if __name__ == '__main__':

@@ -7,3 +7,7 @@ Sent to http://localhost:5001: Hello
 Sent to http://localhost:5001: Hello
 Scanned Advertisement: Peer B's Website
 Peer requested Advertisement. Sent: Peer A's advertised website
+Scanned Advertisement: Peer B's Website
+Visited Advertised Webpage. Received 4668378 characters.
+Peer requested Advertisement. Sent: Peer A's advertised website
+Peer requested Webpage HTML. Sent 5042657 characters.
