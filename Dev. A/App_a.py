@@ -14,7 +14,7 @@ PEER_URL = f"http://localhost:{PEER_PORT}"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Files
+
 MESSAGE_HISTORY_FILE = os.path.join(BASE_DIR, "message_history.txt")
 TEMP_ID_FILE = os.path.join(BASE_DIR, "temp_id.txt")
 PEER_TEMP_ID_FILE = os.path.join(BASE_DIR, "peer_temp_id.txt")
@@ -23,8 +23,8 @@ WEBPAGE_FILE = os.path.join(BASE_DIR, "webpage.html")
 TRANSFER_HISTORY_FILE = os.path.join(BASE_DIR, "transfer_history.json")
 
 
-# IDs
-STATIC_ID = "Device_A"  # <-- Set manually here ("Device_A" or "Device_B") DO NOT FORGET ##############################################
+
+STATIC_ID = "Device_A"  # Set manually here ("Device_A" or "Device_B") DO NOT FORGET ####################################################
 
 latest_received_message = "No message yet."
 status_message = "No messages sent yet."
@@ -36,6 +36,7 @@ def generate_temp_id():
         f.write(temp_id)
     return temp_id
 
+generate_temp_id()
 
 def load_temp_id():
     if os.path.exists(TEMP_ID_FILE):
@@ -87,7 +88,7 @@ def save_transfer_record(record):
     else:
         history = []
 
-    # Marks owned wallers wiuth child
+    
     self_temp_id = load_temp_id()
     record['sender_temp_id'] = f"child:{record['sender_temp_id']}" if record['sender_temp_id'] == self_temp_id else record['sender_temp_id']
     record['receiver_temp_id'] = f"child:{record['receiver_temp_id']}" if record['receiver_temp_id'] == self_temp_id else record['receiver_temp_id']
@@ -96,6 +97,7 @@ def save_transfer_record(record):
 
     with open(TRANSFER_HISTORY_FILE, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=4)
+
 
 
 def load_transfer_history():
@@ -292,7 +294,7 @@ def transfer_page():
 
         try:
             response = requests.post(f"{PEER_URL}/receive_transfer", json=payload)
-            save_transfer_record(payload)  # Save locally as sender
+            save_transfer_record(payload)
             save_message_history(f"Sent Transfer: {payload}")
             status_message = "Transfer Sent!"
         except Exception as e:
@@ -397,10 +399,30 @@ def request_advertisement_route():
 
 @app.route('/request_webpage', methods=['POST'])
 def request_webpage_route():
+    provider_temp_id = load_temp_id()
+    transfer_record = {
+        "amount": "0.1",
+        "sender_temp_id": "AdVrtR3v9U",
+        "receiver_temp_id": provider_temp_id
+    }
+
+    try:
+        
+        payload = transfer_record.copy()
+        requests.post(f"{PEER_URL}/receive_transfer", json=payload)
+    except Exception as e:
+        print(f"Error notifying peer about webpage transfer: {e}")
+
+    save_transfer_record(transfer_record)
+
+    save_message_history(f"Received $0.1 from AdvrtR3v9U for serving webpage.")
+
     webpage_content = load_webpage()
     save_message_history(f"Peer requested Webpage HTML. Sent {len(webpage_content)} characters.")
     print("Peer requested Webpage HTML. Sent webpage.")
+
     return webpage_content
+
 
 @app.route('/receive_transfer', methods=['POST'])
 def receive_transfer():

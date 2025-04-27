@@ -15,3 +15,32 @@ Scanned Advertisement: Peer A's advertised website
 Received Transfer: {'amount': '20', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
 Received Transfer: {'amount': '30', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'child:AoFvqbKuM9'}
 Requested Peer Temp ID. Peer responded: mt71fFaMHd
+Peer requested Temp ID. Sent: AoFvqbKuM9
+Requested Peer Temp ID. Peer responded: mt71fFaMHd
+Received: qpoefjr0ih
+Requested Peer Temp ID. Peer responded: mt71fFaMHd
+Peer requested Advertisement. Sent: Peer B's Website
+Peer requested Webpage HTML. Sent 4668378 characters.
+Requested Peer Temp ID. Peer responded: mt71fFaMHd
+Peer requested Advertisement. Sent: Peer B's Website
+Peer requested Webpage HTML. Sent 4668378 characters.
+Peer requested Advertisement. Sent: Peer B's Website
+Scanned Advertisement: Peer A's advertised website
+Visited Advertised Webpage. Received 5042657 characters.
+Peer requested Advertisement. Sent: Peer B's Website
+Received $0.1 from AdVrtR3v9U for serving webpage.
+Peer requested Webpage HTML. Sent 4668378 characters.
+Peer requested Advertisement. Sent: Peer B's Website
+Peer requested Advertisement. Sent: Peer B's Website
+Received $0.1 from AdVrtR3v9U for serving webpage.
+Peer requested Webpage HTML. Sent 4668378 characters.
+Peer requested Advertisement. Sent: Peer B's Website
+Received $0.1 from AdvrtR3v9U for serving webpage.
+Peer requested Webpage HTML. Sent 4668378 characters.
+Peer requested Advertisement. Sent: Peer B's Website
+Received $0.1 from AdvrtR3v9U for serving webpage.
+Peer requested Webpage HTML. Sent 4668378 characters.
+Requested Peer Temp ID. Peer responded: erdZXpWyzx
+Scanned Advertisement: Peer A's advertised website
+Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'erdZXpWyzx'}
+Visited Advertised Webpage. Received 5042657 characters.
