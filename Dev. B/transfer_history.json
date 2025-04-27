@@ -38,5 +38,15 @@
         "amount": "0.1",
         "sender_temp_id": "AdVrtR3v9U",
         "receiver_temp_id": "erdZXpWyzx"
+    },
+    {
+        "amount": "0.1",
+        "sender_temp_id": "AdVrtR3v9U",
+        "receiver_temp_id": "child:btWscEsWSR"
+    },
+    {
+        "amount": "30",
+        "sender_temp_id": "child:btWscEsWSR",
+        "receiver_temp_id": "YLQh1ESbXV"
     }
 ]

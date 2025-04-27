@@ -430,7 +430,7 @@ def receive_transfer():
     if not data:
         return "No transfer data received", 400
 
-    save_transfer_record(data) 
+    save_transfer_record(data)
     save_message_history(f"Received Transfer: {data}")
     print("Received Transfer:", data)
     return "Transfer received successfully."

@@ -1,47 +1,8 @@
-Peer requested Temp ID. Sent: mt71fFaMHd
-Requested Peer Temp ID. Peer responded: AoFvqbKuM9
+
+Requested Peer Temp ID. Peer responded: btWscEsWSR
+Peer requested Temp ID. Sent: YLQh1ESbXV
 Received: Wsp lil boi
-Sent to http://localhost:5001: kwrmg
-Sent to http://localhost:5001: kwrmg
-Sent to http://localhost:5001: Hello
-Sent to http://localhost:5001: Hello
 Scanned Advertisement: Peer B's Website
-Peer requested Advertisement. Sent: Peer A's advertised website
-Scanned Advertisement: Peer B's Website
+Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'btWscEsWSR'}
 Visited Advertised Webpage. Received 4668378 characters.
-Peer requested Advertisement. Sent: Peer A's advertised website
-Peer requested Webpage HTML. Sent 5042657 characters.
-Peer requested Advertisement. Sent: Peer A's advertised website
-Sent Transfer: {'amount': '20', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
-Sent Transfer: {'amount': '30', 'sender_temp_id': 'child:mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
-Peer requested Temp ID. Sent: mt71fFaMHd
-Requested Peer Temp ID. Peer responded: AoFvqbKuM9
-Peer requested Temp ID. Sent: mt71fFaMHd
-Sent to http://localhost:5001: qpoefjr0ih
-Peer requested Temp ID. Sent: mt71fFaMHd
-Scanned Advertisement: Peer B's Website
-Visited Advertised Webpage. Received 4668378 characters.
-Peer requested Temp ID. Sent: mt71fFaMHd
-Scanned Advertisement: Peer B's Website
-Visited Advertised Webpage. Received 265 characters.
-Scanned Advertisement: Peer B's Website
-Visited Advertised Webpage. Received 265 characters.
-Peer requested Advertisement. Sent: Peer A's advertised website
-Peer requested Webpage HTML. Sent 5042657 characters.
-Scanned Advertisement: Peer B's Website
-Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'child:AoFvqbKuM9'}
-Visited Advertised Webpage. Received 4668378 characters.
-Scanned Advertisement: Peer B's Website
-Scanned Advertisement: Peer B's Website
-Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'child:AoFvqbKuM9'}
-Visited Advertised Webpage. Received 4668378 characters.
-Scanned Advertisement: Peer B's Website
-Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'AoFvqbKuM9'}
-Visited Advertised Webpage. Received 4668378 characters.
-Scanned Advertisement: Peer B's Website
-Received Transfer: {'amount': '0.1', 'sender_temp_id': 'AdVrtR3v9U', 'receiver_temp_id': 'AoFvqbKuM9'}
-Visited Advertised Webpage. Received 4668378 characters.
-Peer requested Temp ID. Sent: erdZXpWyzx
-Peer requested Advertisement. Sent: Peer A's advertised website
-Received $0.1 from AdvrtR3v9U for serving webpage.
-Peer requested Webpage HTML. Sent 5042657 characters.
+Received Transfer: {'amount': '30', 'sender_temp_id': 'btWscEsWSR', 'receiver_temp_id': 'child:YLQh1ESbXV'}
