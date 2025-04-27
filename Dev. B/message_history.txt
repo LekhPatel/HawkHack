@@ -11,3 +11,6 @@ Peer requested Advertisement. Sent: Peer B's Website
 Peer requested Webpage HTML. Sent 4668378 characters.
 Scanned Advertisement: Peer A's advertised website
 Visited Advertised Webpage. Received 5042657 characters.
+Scanned Advertisement: Peer A's advertised website
+Received Transfer: {'amount': '20', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'AoFvqbKuM9'}
+Received Transfer: {'amount': '30', 'sender_temp_id': 'mt71fFaMHd', 'receiver_temp_id': 'child:AoFvqbKuM9'}

@@ -3,13 +3,14 @@ import random
 import string
 import requests
 from flask import Flask, request, render_template_string
+import json
 
 app = Flask(__name__)
 
 
 # Configuration
-MY_PORT = 5001  # Change this manually for each device (5000 for A, 5001 for B)
-PEER_PORT = 5001 if MY_PORT == 5000 else 5000  # Opposite port
+MY_PORT = 5001  # Change this manually for each device (5000 for A, 5001 for B) DO NOT FORGET #########################################
+PEER_PORT = 5001 if MY_PORT == 5000 else 5000
 PEER_URL = f"http://localhost:{PEER_PORT}"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,13 +21,13 @@ TEMP_ID_FILE = os.path.join(BASE_DIR, "temp_id.txt")
 PEER_TEMP_ID_FILE = os.path.join(BASE_DIR, "peer_temp_id.txt")
 ADVERTISEMENT_FILE = os.path.join(BASE_DIR, "advertisement.txt")
 WEBPAGE_FILE = os.path.join(BASE_DIR, "webpage.html")
+TRANSFER_HISTORY_FILE = os.path.join(BASE_DIR, "transfer_history.json")
 
 
 
-# IDs
-STATIC_ID = "Device_B"  # <-- Set manually here ("Device_A" or "Device_B")
 
-# Session Variables
+STATIC_ID = "Device_B"  # <-- Set manually here ("Device_A" or "Device_B") DO NOT FORGET ##############################################
+
 latest_received_message = "No message yet."
 status_message = "No messages sent yet."
 
@@ -80,6 +81,56 @@ def load_message_history():
             return f.read()
     return ""
 
+def save_transfer_record(record):
+    if os.path.exists(TRANSFER_HISTORY_FILE):
+        with open(TRANSFER_HISTORY_FILE, "r", encoding="utf-8") as f:
+            history = json.load(f)
+    else:
+        history = []
+
+    # Mark ownership
+    self_temp_id = load_temp_id()
+    record['sender_temp_id'] = f"child:{record['sender_temp_id']}" if record['sender_temp_id'] == self_temp_id else record['sender_temp_id']
+    record['receiver_temp_id'] = f"child:{record['receiver_temp_id']}" if record['receiver_temp_id'] == self_temp_id else record['receiver_temp_id']
+
+    history.append(record)
+
+    with open(TRANSFER_HISTORY_FILE, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=4)
+
+
+def load_transfer_history():
+    if os.path.exists(TRANSFER_HISTORY_FILE):
+        with open(TRANSFER_HISTORY_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def calculate_balance_and_stats():
+    history = load_transfer_history()
+    net_balance = 0.0
+    total_sent = 0.0
+    total_received = 0.0
+    num_transfers = len(history)
+
+    for record in history:
+        amount = float(record['amount'])
+        sender = record['sender_temp_id']
+        receiver = record['receiver_temp_id']
+
+        if sender.startswith("child:"):
+            net_balance -= amount
+            total_sent += amount
+        if receiver.startswith("child:"):
+            net_balance += amount
+            total_received += amount
+
+    return {
+        'net_balance': net_balance,
+        'total_sent': total_sent,
+        'total_received': total_received,
+        'num_transfers': num_transfers
+    }
+
 
 def send_message_to_peer(message):
     try:
@@ -109,8 +160,10 @@ def home():
         <h2>Peer Temporary ID: {{ peer_temp_id }}</h2>
 
         <a href="/send_message">Send Message</a><br><br>
-        <a href="/request_peer_id">Discover Peer Temp ID</a>
-        <br><a href="/advertisements">Scan Advertisements</a>
+        <a href="/request_peer_id">Discover Peer Temp ID</a><br><br>
+        <a href="/advertisements">Scan Advertisements</a><br><br>
+        <a href="/transfer">Transfer</a><br><br>
+        <a href="/balance">Balance</a><br><br>
     """, static_id=STATIC_ID, temp_id=load_temp_id(), peer_temp_id=load_peer_temp_id())
 
 
@@ -222,6 +275,96 @@ def advertisements_page():
         <br><a href="/">Back Home</a>
     """, status=status_message, history=load_message_history(), webpage=webpage_content)
 
+@app.route('/transfer', methods=['GET', 'POST'])
+def transfer_page():
+    global status_message
+
+    if request.method == 'POST':
+        amount = request.form['amount']
+        sender_temp_id = load_temp_id()
+        receiver_temp_id = load_peer_temp_id()
+
+        payload = {
+            "amount": amount,
+            "sender_temp_id": sender_temp_id,
+            "receiver_temp_id": receiver_temp_id
+        }
+
+        try:
+            response = requests.post(f"{PEER_URL}/receive_transfer", json=payload)
+            save_transfer_record(payload)  # Save locally as sender
+            save_message_history(f"Sent Transfer: {payload}")
+            status_message = "Transfer Sent!"
+        except Exception as e:
+            status_message = f"Error sending transfer: {e}"
+
+    return render_template_string("""
+        <h1>E-commerce Transfer</h1>
+
+        <form method="POST">
+            <label>Select Item:</label><br>
+            <select onchange="document.getElementById('amount').value=this.value;">
+                <option value="">--Choose--</option>
+                <option value="10">Item A ($10)</option>
+                <option value="20">Item B ($20)</option>
+                <option value="30">Item C ($30)</option>
+            </select><br><br>
+
+            <label>Or Enter Amount:</label><br>
+            <input type="text" name="amount" id="amount" required><br><br>
+
+            <input type="submit" value="Send Payment">
+        </form>
+
+        <h3>Status:</h3>
+        <p>{{ status }}</p>
+
+        <br><a href="/">Back Home</a>
+    """, status=status_message)
+
+@app.route('/balance')
+def balance_page():
+    transfer_history = load_transfer_history()
+    stats = calculate_balance_and_stats()
+
+    return render_template_string("""
+        <h1>Transfer Summary</h1>
+
+        <div style="border:1px solid black; padding:10px; margin-bottom:20px;">
+            <p><b>Net Balance:</b> ${{ stats.net_balance | round(2) }}</p>
+            <p><b>Total Sent:</b> ${{ stats.total_sent | round(2) }}</p>
+            <p><b>Total Received:</b> ${{ stats.total_received | round(2) }}</p>
+            <p><b>Number of Transfers:</b> {{ stats.num_transfers }}</p>
+        </div>
+
+        <h2>Transfer History</h2>
+
+        {% if transfers %}
+            <table border="1" cellpadding="5" cellspacing="0">
+                <tr>
+                    <th>Sender Temp ID</th>
+                    <th>Receiver Temp ID</th>
+                    <th>Amount</th>
+                </tr>
+                {% for record in transfers %}
+                <tr>
+                    <td style="color: {% if record.sender_temp_id.startswith('child:') %}green{% else %}black{% endif %};">
+                        {{ record.sender_temp_id }}
+                    </td>
+                    <td style="color: {% if record.receiver_temp_id.startswith('child:') %}green{% else %}black{% endif %};">
+                        {{ record.receiver_temp_id }}
+                    </td>
+                    <td>${{ record.amount }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No transfers yet.</p>
+        {% endif %}
+
+        <br><a href="/">Back Home</a>
+    """, transfers=[type('obj', (object,), rec) for rec in transfer_history], stats=stats)
+
 
 @app.route('/receive', methods=['POST'])
 def receive_message():
@@ -254,6 +397,17 @@ def request_webpage_route():
     save_message_history(f"Peer requested Webpage HTML. Sent {len(webpage_content)} characters.")
     print("Peer requested Webpage HTML. Sent webpage.")
     return webpage_content
+
+@app.route('/receive_transfer', methods=['POST'])
+def receive_transfer():
+    data = request.get_json()
+    if not data:
+        return "No transfer data received", 400
+
+    save_transfer_record(data)
+    save_message_history(f"Received Transfer: {data}")
+    print("Received Transfer:", data)
+    return "Transfer received successfully."
 
 
 if __name__ == '__main__':
