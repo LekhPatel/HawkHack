@@ -6,18 +6,22 @@ from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
+
 # Configuration
-MY_PORT = 5001  # Change this manually for each device (5000 on A, 5001 on B)
+MY_PORT = 5001  # Change this manually for each device (5000 for A, 5001 for B)
 PEER_PORT = 5001 if MY_PORT == 5000 else 5000  # Opposite port
 PEER_URL = f"http://localhost:{PEER_PORT}"
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Files
-URL_FILE = "recipient_url.txt"
-MESSAGE_HISTORY_FILE = "message_history.txt"
-TEMP_ID_FILE = "temp_id.txt"
+MESSAGE_HISTORY_FILE = os.path.join(BASE_DIR, "message_history.txt")
+TEMP_ID_FILE = os.path.join(BASE_DIR, "temp_id.txt")
+PEER_TEMP_ID_FILE = os.path.join(BASE_DIR, "peer_temp_id.txt")
+
 
 # IDs
-STATIC_ID = ''.join(random.choices(string.ascii_letters + string.digits, k=10))  # Permanent ID
+STATIC_ID = "Device_B"  # <-- Set manually here ("Device_A" or "Device_B")
 
 # Session Variables
 latest_received_message = "No message yet."
@@ -36,6 +40,18 @@ def load_temp_id():
         with open(TEMP_ID_FILE, "r") as f:
             return f.read().strip()
     return generate_temp_id()
+
+
+def save_peer_temp_id(peer_temp_id):
+    with open(PEER_TEMP_ID_FILE, "w") as f:
+        f.write(peer_temp_id)
+
+
+def load_peer_temp_id():
+    if os.path.exists(PEER_TEMP_ID_FILE):
+        with open(PEER_TEMP_ID_FILE, "r") as f:
+            return f.read().strip()
+    return "Unknown"
 
 
 def save_message_history(entry):
@@ -62,8 +78,10 @@ def send_message_to_peer(message):
 def request_peer_id():
     try:
         response = requests.post(f"{PEER_URL}/request_temp_id")
-        save_message_history(f"Requested Peer Temp ID. Peer responded: {response.text}")
-        return f"Peer Temp ID: {response.text}"
+        peer_temp_id = response.text.strip()
+        save_peer_temp_id(peer_temp_id)  # Save the peer's temp ID
+        save_message_history(f"Requested Peer Temp ID. Peer responded: {peer_temp_id}")
+        return f"Peer Temp ID: {peer_temp_id}"
     except Exception as e:
         return f"Error requesting Peer Temp ID: {e}"
 
@@ -72,18 +90,17 @@ def request_peer_id():
 def home():
     return render_template_string("""
         <h1>Static ID: {{ static_id }}</h1>
-        <h2>Temporary ID: {{ temp_id }}</h2>
+        <h2>My Temporary ID: {{ temp_id }}</h2>
+        <h2>Peer Temporary ID: {{ peer_temp_id }}</h2>
 
         <a href="/send_message">Send Message</a><br><br>
         <a href="/request_peer_id">Discover Peer Temp ID</a>
-    """, static_id=STATIC_ID, temp_id=load_temp_id())
+    """, static_id=STATIC_ID, temp_id=load_temp_id(), peer_temp_id=load_peer_temp_id())
 
 
 @app.route('/send_message', methods=['GET', 'POST'])
 def send_message_page():
     global status_message
-
-    temp_id = load_temp_id()
 
     if request.method == 'POST':
         message = request.form['message']
