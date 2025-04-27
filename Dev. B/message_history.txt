@@ -5,3 +5,5 @@ Received: kwrmg
 Received: kwrmg
 Received: Hello
 Received: Hello
+Peer requested Advertisement. Sent: Peer B's Website
+Scanned Advertisement: Peer A's advertised website

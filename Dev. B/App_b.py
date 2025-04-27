@@ -18,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MESSAGE_HISTORY_FILE = os.path.join(BASE_DIR, "message_history.txt")
 TEMP_ID_FILE = os.path.join(BASE_DIR, "temp_id.txt")
 PEER_TEMP_ID_FILE = os.path.join(BASE_DIR, "peer_temp_id.txt")
+ADVERTISEMENT_FILE = os.path.join(BASE_DIR, "advertisement.txt")
 
 
 # IDs
@@ -40,6 +41,12 @@ def load_temp_id():
         with open(TEMP_ID_FILE, "r") as f:
             return f.read().strip()
     return generate_temp_id()
+
+def load_advertisement():
+    if os.path.exists(ADVERTISEMENT_FILE):
+        with open(ADVERTISEMENT_FILE, "r") as f:
+            return f.read().strip()
+    return "No advertisement available."
 
 
 def save_peer_temp_id(peer_temp_id):
@@ -95,6 +102,7 @@ def home():
 
         <a href="/send_message">Send Message</a><br><br>
         <a href="/request_peer_id">Discover Peer Temp ID</a>
+        <br><a href="/advertisements">Scan Advertisements</a>
     """, static_id=STATIC_ID, temp_id=load_temp_id(), peer_temp_id=load_peer_temp_id())
 
 
@@ -152,6 +160,35 @@ def request_peer_id_page():
         <br><a href="/">Back Home</a>
     """, status=status_message, history=load_message_history())
 
+@app.route('/advertisements', methods=['GET', 'POST'])
+def advertisements_page():
+    global status_message
+
+    if request.method == 'POST':
+        try:
+            response = requests.post(f"{PEER_URL}/request_advertisement")
+            ad_text = response.text.strip()
+            save_message_history(f"Scanned Advertisement: {ad_text}")
+            status_message = f"Advertisement: {ad_text}"
+        except Exception as e:
+            status_message = f"Error scanning Advertisement: {e}"
+
+    return render_template_string("""
+        <h1>Scan Peer Advertisements</h1>
+
+        <form method="POST">
+            <input type="submit" value="Scan Advertisements">
+        </form>
+
+        <h3>Status:</h3>
+        <p>{{ status }}</p>
+
+        <h3>Message History:</h3>
+        <pre>{{ history }}</pre>
+
+        <br><a href="/">Back Home</a>
+    """, status=status_message, history=load_message_history())
+
 
 @app.route('/receive', methods=['POST'])
 def receive_message():
@@ -170,6 +207,13 @@ def request_temp_id_route():
     save_message_history(f"Peer requested Temp ID. Sent: {temp_id}")
     print(f"Peer requested Temp ID. My Temp ID: {temp_id}")
     return temp_id
+
+@app.route('/request_advertisement', methods=['POST'])
+def request_advertisement_route():
+    ad_text = load_advertisement()
+    save_message_history(f"Peer requested Advertisement. Sent: {ad_text}")
+    print(f"Peer requested Advertisement. Sent: {ad_text}")
+    return ad_text
 
 
 if __name__ == '__main__':

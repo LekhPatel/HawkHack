@@ -5,3 +5,5 @@ Sent to http://localhost:5001: kwrmg
 Sent to http://localhost:5001: kwrmg
 Sent to http://localhost:5001: Hello
 Sent to http://localhost:5001: Hello
+Scanned Advertisement: Peer B's Website
+Peer requested Advertisement. Sent: Peer A's advertised website
